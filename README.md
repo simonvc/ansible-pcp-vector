@@ -1,5 +1,6 @@
 # ansible-pcp-vector
 Two very simple playbooks to install performance co-pilot and netflix Vector onto Ubuntu 14.04
+Based on https://www.djouxtech.net/posts/install-vector-with-ansible/
 
 1/ Create a ansible_hosts file that looks like this:
 

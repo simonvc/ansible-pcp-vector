@@ -1,0 +1,15 @@
+---
+- hosts: pcphosts
+  sudo: yes
+  tasks:
+    - name: Add key for pcp repository
+      apt_key: url=https://bintray.com/user/downloadSubjectPublicKey?username=netflixoss state=present
+
+    - name: Add pcp repository into sources list.
+      apt_repository: repo='deb https://dl.bintray.com/netflixoss/ubuntu trusty main' state=present
+
+    - name: Install pcp package
+      apt: name=pcp update_cache=yes state=present
+
+    - name: Install pcp-webapi package
+      apt: name=pcp-webapi state=present

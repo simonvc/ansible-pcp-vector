@@ -1,0 +1,53 @@
+---
+- hosts: vectorhosts
+  sudo: yes
+  tasks:
+    - name: Install Node.js
+      apt: name=nodejs state=present
+
+    - name: Install git
+      apt: name=git state=present
+
+    - name: Install npm (Node.js package manager)
+      apt: name=npm state=present
+
+    - name: Install Bower globally
+      npm: name=bower global=yes state=present
+
+    - name: Install gulp globally
+      npm: name=gulp global=yes state=present
+
+    - name: Create website folder
+      file: path=/www state=directory
+
+    - name: Clone vector repository in /www
+      git: repo=https://github.com/Netflix/vector.git dest=/www/vector version=stable
+
+    - name : Symbolic link to node
+      file: src=/usr/bin/nodejs dest=/usr/bin/node state=link
+
+    - name: Install npm packages
+      npm: path=/www/vector state=present
+
+    - name: Ensure www-data user exists
+      user: name=www-data state=present
+
+    - name: Ensure www-data group exists
+      group: name=www-data state=present
+
+    - name: Change /www/vector ownership to ubuntu
+      file: path=/www/vector owner=ubuntu group=ubuntu recurse=yes
+
+    - name: Install bower dependencies
+      bower: path=/www/vector state=present
+      sudo: no
+
+    - name: create /www/vector/bower_components
+      file: path=/www/vector/bower_components owner=ubuntu
+
+    - name: Run Gulp build
+      shell: gulp build >> gulp_build.txt chdir=/www/vector creates=gulp_build.txt
+      sudo: yes
+
+    - name: Run gulp serve in background
+      shell: echo "gulp serve"|at now chdir=/www/vector
